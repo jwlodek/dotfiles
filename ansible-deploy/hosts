@@ -1,0 +1,17 @@
+[local]
+127.0.0.1
+
+[XFP]
+xf17bm-ws1
+xf17bm-ioc1
+xf17bm-ioc2
+
+[IXS]
+xf10id-ws1
+xf10id-ws2
+xf10id-ws3
+xf10idd-ioc1
+xf10idd-ioc2
+xf10idd-ioc3
+xf10id-is1
+xf10idb-ioc1

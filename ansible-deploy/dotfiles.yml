@@ -1,0 +1,30 @@
+---
+
+- name: Update dotfiles on target host
+  hosts: all
+  remote_user: jwlodek
+  become: true
+  vars:
+    user_home: "{{lookup('env', 'HOME')}}"
+    http_proxy: http://proxy:8888
+  tasks:
+    - name: Retrieve dotfile repository on host
+      git:
+        clone: yes
+        update: yes
+        recursive: no
+        track_submodules: no
+        force: yes
+        dest: "{{user_home}}"
+        repo: https://github.com/jwlodek/dotfiles
+      environment: "{{ http_proxy }}"
+   
+    - name: Run deploy-dotfiles
+      command:
+        cmd: ./deploy-dotfiles.sh
+        chdir: "{{user_home}}/dotfiles"
+    
+    - name: Cleanup user home
+      command:
+        cmd: rm -r dotfiles
+        chdir: "{{user_home}}"
