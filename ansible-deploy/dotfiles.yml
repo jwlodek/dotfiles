@@ -17,6 +17,7 @@
         repo: https://github.com/jwlodek/dotfiles
       environment:
         http_proxy: http://proxy:8888
+        https_proxy: http://proxy:8888
    
     - name: Run deploy-dotfiles
       command:

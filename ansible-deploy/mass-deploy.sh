@@ -1,4 +1,4 @@
 #!/bin/bash
 
 
-ansible-playbook -i ./hosts -Kk dotfiles.yml
+ansible-playbook -i ./hosts -k dotfiles.yml
