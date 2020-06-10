@@ -19,12 +19,12 @@
         http_proxy: http://proxy:8888
         https_proxy: http://proxy:8888
    
-    - name: Run deploy-dotfiles
+    - name: Run setup-dotfiles
       command:
-        cmd: ./deploy-dotfiles.sh
+        cmd: ./setup-dotfiles.sh
         chdir: "{{user_home}}/dotfiles"
     
     - name: Cleanup user home
-      command:
-        cmd: rm -r dotfiles
-        chdir: "{{user_home}}"
+      file:
+        path: "{{user_home}}/dotfiles"
+        state: absent

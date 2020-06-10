@@ -1,0 +1,141 @@
+#!/bin/bash
+
+function print_help () {
+    echo "Welcome to dotfile-manager."
+    echo "This helper script aids in managing dotfiles across a collection of machines"
+    echo
+    echo "Usage:"
+    echo "  -h / --help     - Show this help message"
+    echo "  -c / --clear    - Clear the host list"
+    echo "  -l / --local    - Update the dotfiles for the local machine"
+    echo "  -a / --add-host - Adds an additional host to the list"
+    echo "  -r / --remove   - Removes a host from the list"
+    echo "  -s / --show     - Shows list of current hosts"
+    echo "  -u / --update   - Updates dotfiles repository on github"
+    echo
+    echo "Running this script with no arguments will update dotfiles on all specified hosts."
+    echo
+}
+
+
+function show_hosts() {
+    echo "Currently defined hosts for dotfile-manager:"
+    echo "----------------------------"
+    cat ansible-deploy/hosts
+}
+
+
+function add_host () {
+
+    show_hosts
+    echo "------------------" && echo
+    HOST_FILE="Workspace/dotfiles/ansible-deploy/hosts"
+    read -p "Please specify a host group > " HOST_GROUP
+    read -p "Please specify a host > " HOST
+    if grep -Fxq "$HOST" $HOST_FILE;
+    then
+        echo "Host $HOST is already in the host file."
+        echo "Please remove it if you wish to assign it to a new group"
+    else
+        if grep -Fxq "[$HOST_GROUP]" $HOST_FILE;
+        then
+            sed -i "/^\[$HOST_GROUP\]/a $HOST" "$HOST_FILE"
+        else
+            echo "" >> $HOST_FILE
+            echo "[$HOST_GROUP]" >> $HOST_FILE
+            echo $HOST >> $HOST_FILE
+        fi
+        show_hosts
+        read -p "Would you like to update the upstream dotfile repo now? (y/n) > " UPDATE
+        if [ "$UPDATE" == "y" ];
+        then
+            update_dotfile_repo
+        fi
+    fi
+}
+
+
+function remove_host () {
+    show_hosts
+    echo "------------------" && echo
+    HOST_FILE="Workspace/dotfiles/ansible-deploy/hosts"
+    read -p "Please enter the name of the host to remove > " HOST
+    if grep -Fxq "$HOST" $HOST_FILE;
+    then
+        sed -i "/^$HOST/d" $HOST_FILE
+        show_hosts
+        read -p "Would you like to update the upstream dotfile repo now? (y/n) > " UPDATE
+        if [ "$UPDATE" == "y" ];
+        then
+            update_dotfile_repo
+        fi
+    else
+        echo "Host $HOST was already not in the host file."
+    fi
+}
+
+
+function clear_hosts () {
+    rm ansible-deploy/hosts
+    touch ansiblee-deploy/hosts
+}
+
+
+function run_local () {
+    echo "Deploying dotfiles locally for user $USER"
+    ./setup-dotfiles.sh
+    echo "Done."
+}
+
+
+function parse_args () {
+
+    case $1 in
+        -h|--help) print_help
+        ;;
+        -c|--clear)
+        ;;
+        -s|--show) show_hosts
+        ;;
+        -l|--local) run_local
+        ;;
+        -r|--remove) remove_host
+        ;;
+        -a|--add-host) add_host
+        ;;
+        *)
+        echo "$1 is not a supported argument."
+        print_help
+    esac
+}
+
+
+function update_dotfile_repo () {
+    cd Workspace/dotfiles
+    DATE=$(date '+%Y-%m-%d-%H:%M:%S')
+    git pull
+    git add -A
+    git commit -m "Auto-update dotfiles repo $DATE"
+    git push
+}
+
+
+function run_update_dotfiles () {
+	cd ansible-deploy
+    ./mass-deploy.sh
+	cd ..
+}
+
+echo
+if [ $# == 1 ];
+then
+    parse_args $1
+else
+    if [ $# != 0 ];
+    then
+        echo "Only 1 or 0 arguments are supported at a time!\n"
+        print_help
+    else
+        run_update_dotfiles
+    fi
+fi
