@@ -6,6 +6,12 @@
   vars:
     user_home: "{{lookup('env', 'HOME')}}"
   tasks:
+    
+    - name: Remove previous dotfiles directory
+      file:
+        path: "{{user_home}}/dotfiles"
+        state: absent   
+
     - name: Retrieve dotfile repository on host
       git:
         clone: yes
