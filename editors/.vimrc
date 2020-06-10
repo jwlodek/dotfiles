@@ -7,3 +7,5 @@ set cursorline
 set hlsearch
 set incsearch
 set expandtab
+set autoindent
+set formatoptions+=cro

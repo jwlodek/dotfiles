@@ -4,7 +4,7 @@
 
 # First, clean up existing dotfiles
 
-rm $HOME~/.nanorc
+rm $HOME/.nanorc
 rm $HOME/.vimrc
 rm $HOME/.gitconfig
 
