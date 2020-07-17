@@ -16,3 +16,8 @@ xf10idb-ioc1
 
 [XPD]
 xf28idd-ioc1
+
+[CICD]
+ls2-dev1
+ls2-dev2
+ls2-dev3
