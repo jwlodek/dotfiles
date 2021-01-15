@@ -43,7 +43,7 @@ fi
 
 if [ $STATUS != "0" ];
 then
-    yum install cmake gcc-c++ make python3-devel -y
+    sudo yum install cmake gcc-c++ make python3-devel -y
 fi
 
 
